@@ -1,4 +1,4 @@
-FROM node:10-alpine
+FROM node:12-alpine
 
 LABEL "name"="eslint-action"
 LABEL "version"="1.0.0"
