@@ -1,0 +1,19 @@
+{
+  "name": "eslint-action",
+  "private": true,
+  "main": "run.js",
+  "scripts": {
+    "lint": "eslint ./",
+    "lint:fix": "eslint --fix ./",
+    "test": "npm run lint"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.17.3"
+  },
+  "peerDependencies": {
+    "eslint": ">=5.0.0"
+  }
+}
