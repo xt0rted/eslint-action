@@ -1,15 +1,15 @@
 // @ts-check
 
 const eslint = require("eslint");
-const { setFailed } = require("@actions/core");
+const { getInput, setFailed } = require("@actions/core");
 const { context, GitHub } = require("@actions/github");
 
 const options = require("./options");
 
-const { GITHUB_TOKEN, GITHUB_WORKSPACE, RUN_DIR } = process.env;
+const { GITHUB_WORKSPACE, RUN_DIR } = process.env;
 const args = process.argv.slice(2);
 
-const githubClient = new GitHub(GITHUB_TOKEN);
+const githubClient = new GitHub(getInput("repo-token", { required: true }));
 
 const levels = ["", "warning", "failure"];
 
