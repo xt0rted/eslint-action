@@ -1,22 +1,15 @@
+// @ts-check
+
 const eslint = require("eslint");
+const { setFailed } = require("@actions/core");
+const { context, GitHub } = require("@actions/github");
 
 const options = require("./options");
-const request = require("./request");
 
-const { GITHUB_ACTION, GITHUB_EVENT_PATH, GITHUB_SHA, GITHUB_TOKEN, GITHUB_WORKSPACE, RUN_DIR } = process.env;
+const { GITHUB_TOKEN, GITHUB_WORKSPACE, RUN_DIR } = process.env;
 const args = process.argv.slice(2);
 
-const event = require(GITHUB_EVENT_PATH); /* eslint-disable-line import/no-dynamic-require */
-const { repository } = event;
-const { owner: { login: owner } } = repository;
-const { name: repo } = repository;
-
-const headers = {
-  Accept: "application/vnd.github.antiope-preview+json",
-  Authorization: `Bearer ${GITHUB_TOKEN}`,
-  "Content-Type": "application/json",
-  "User-Agent": "eslint-action",
-};
+const githubClient = new GitHub(GITHUB_TOKEN);
 
 const levels = ["", "warning", "failure"];
 
@@ -50,21 +43,13 @@ function translateOptions(cliOptions) {
 }
 
 async function createCheck() {
-  const body = {
-    head_sha: GITHUB_SHA,
-    name: GITHUB_ACTION,
-    started_at: new Date(),
+  const { data } = await githubClient.checks.create({
+    ...context.repo,
+    head_sha: context.sha,
+    name: context.action,
+    started_at: new Date().toISOString(),
     status: "in_progress",
-  };
-
-  const { data } = await request(
-    `https://api.github.com/repos/${owner}/${repo}/check-runs`,
-    {
-      body,
-      headers,
-      method: "POST",
-    },
-  );
+  });
 
   return data.id;
 }
@@ -104,39 +89,20 @@ async function runESLint() {
     output: {
       annotations,
       summary: `${errorCount} error(s), ${warningCount} warning(s) found`,
-      title: GITHUB_ACTION,
+      title: context.action,
     },
   };
 }
 
 async function updateCheck(id, conclusion, output) {
-  const body = {
-    completed_at: new Date(),
+  await githubClient.checks.update({
+    ...context.repo,
+    check_run_id: id,
+    completed_at: new Date().toISOString(),
     conclusion,
-    head_sha: GITHUB_SHA,
-    name: GITHUB_ACTION,
     output,
     status: "completed",
-  };
-
-  await request(
-    `https://api.github.com/repos/${owner}/${repo}/check-runs/${id}`,
-    {
-      body,
-      headers,
-      method: "PATCH",
-    },
-  );
-}
-
-function exitWithError(err) {
-  console.error("Error", err.stack);
-
-  if (err.data) {
-    console.error(err.data);
-  }
-
-  process.exit(1);
+  });
 }
 
 async function run() {
@@ -149,13 +115,13 @@ async function run() {
     await updateCheck(id, conclusion, output);
 
     if (conclusion === "failure") {
-      process.exit(78);
+      setFailed("ESLint found errors");
     }
-  } catch (err) {
+  } catch (error) {
+    setFailed(error.message);
     await updateCheck(id, "failure");
-
-    exitWithError(err);
+    throw error;
   }
 }
 
-run().catch(exitWithError);
+run();
