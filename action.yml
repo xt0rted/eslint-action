@@ -1,0 +1,18 @@
+name: "ESLint With Annotations"
+
+description: "An action that runs ESLint and creates annotations for errors and warnings"
+
+author: "xt0rted"
+
+branding:
+    icon: "award"
+    color: "green"
+
+inputs:
+  repo-token:
+    description: The GITHUB_TOKEN secret
+    required: true
+
+runs:
+    using: "docker"
+    image: "Dockerfile"
