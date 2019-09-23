@@ -13,6 +13,11 @@ inputs:
     description: The GITHUB_TOKEN secret
     required: true
 
+  args:
+    description: The arguments to pass to ESLint
+    required: false
+    default: ./
+
 runs:
     using: "docker"
     image: "Dockerfile"

@@ -7,7 +7,6 @@ const { context, GitHub } = require("@actions/github");
 const options = require("./options");
 
 const { GITHUB_WORKSPACE, RUN_DIR } = process.env;
-const args = process.argv.slice(2);
 
 const githubClient = new GitHub(getInput("repo-token", { required: true }));
 
@@ -55,7 +54,7 @@ async function createCheck() {
 }
 
 async function runESLint() {
-  const currentOptions = options.parse(args.join(" ") || "./");
+  const currentOptions = options.parse(getInput("args"));
 
   const files = currentOptions._;
 
