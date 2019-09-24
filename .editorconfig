@@ -18,6 +18,3 @@ indent_size = 2
 
 [{package.json,package-lock.json}]
 end_of_line = lf
-
-[*.workflow]
-indent_size = 2
