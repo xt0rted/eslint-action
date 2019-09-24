@@ -18,6 +18,10 @@ inputs:
     required: false
     default: ./
 
+  working_directory:
+    description: The optional directory to run the action in
+    required: false
+
 runs:
     using: "docker"
     image: "Dockerfile"

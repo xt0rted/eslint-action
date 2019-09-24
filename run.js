@@ -6,15 +6,16 @@ const { context, GitHub } = require("@actions/github");
 
 const options = require("./options");
 
-const { GITHUB_WORKSPACE, RUN_DIR } = process.env;
+const { GITHUB_WORKSPACE } = process.env;
 
+const workingDirectory = getInput("working_directory");
 const githubClient = new GitHub(getInput("repo-token", { required: true }));
 
 const levels = ["", "warning", "failure"];
 
 // change the working directory if we're not running in the root of the repo
-if (RUN_DIR) {
-  process.chdir(RUN_DIR);
+if (workingDirectory) {
+  process.chdir(workingDirectory);
 }
 
 function translateOptions(cliOptions) {
