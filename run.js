@@ -4,6 +4,7 @@ const eslint = require("eslint");
 const { getInput, setFailed } = require("@actions/core");
 const { context, GitHub } = require("@actions/github");
 
+
 const options = require("./options");
 
 const { GITHUB_WORKSPACE } = process.env;
@@ -11,11 +12,11 @@ const { GITHUB_WORKSPACE } = process.env;
 const workingDirectory = getInput("working_directory");
 const githubClient = new GitHub(getInput("repo-token", { required: true }));
 
-const levels = ["", "warning", "failure"];
+const levels = ["", "warning", "failure"]
 
 // change the working directory if we're not running in the root of the repo
 if (workingDirectory) {
-  process.chdir(workingDirectory);
+    process.chdir(workingDirectory);
 }
 
 function translateOptions(cliOptions) {
