@@ -26,6 +26,4 @@ jobs:
         run: npm ci
 
       - name: ESLint
-        uses: ./
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+        run: npm test
